@@ -245,8 +245,11 @@ pub unsafe extern "C" fn callback(
 
         for p in 0..num {
             let i = CStr::from_ptr(paths[p]).to_bytes();
-            let flag = fse::StreamFlags::from_bits(flags[p] as u32)
-                .expect(format!("Unable to decode StreamFlags: {}", flags[p] as u32).as_ref());
+            let flag = if let Some(f) = fse::StreamFlags::from_bits(flags[p] as u32) {
+                f
+            } else {
+                continue;
+            };
             let id = ids[p];
 
             let path = PathBuf::from(from_utf8(i).expect("Invalid UTF8 string."));
